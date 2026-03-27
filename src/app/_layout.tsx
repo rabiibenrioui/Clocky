@@ -1,19 +1,25 @@
-import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Tabs, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import "../../global.css";
 
 export default function RootLayout() {
+  // tab icons size
   const iconSize = 28;
+
+  // hide tab bar variable
+  const segments = useSegments() as string[];
+  const hideTabBar = segments.includes("add-alarm");
 
   return (
     <Tabs 
       screenOptions={{
         animation: "shift",
+        tabBarHideOnKeyboard: true,
         headerShown: false, 
         tabBarShowLabel: true, 
         tabBarStyle: {
+          display: hideTabBar ? "none" : "flex",
           backgroundColor: "#fff", 
           borderRadius: 30, 
           overflow: "hidden", 

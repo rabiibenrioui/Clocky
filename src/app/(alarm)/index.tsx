@@ -1,11 +1,15 @@
-import { FlatList, ScrollView, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 import Clock from "@/components/Clock"
 import AlarmCard from "@/components/AlarmCard";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function Alarm() {
+    // expo router
+    const router = useRouter();
+    
     // Dummy alarm data
     const alarms = [
         { id: '1', time: "12:45", period: "AM", label: "Alarm", frequency: "Every Day", isOn: true },
@@ -52,9 +56,11 @@ export default function Alarm() {
             {/* Add alarm */}
             <View className="absolute bottom-28 left-0 right-0 items-center z-50 bg-transparent">
                 <View className="bg-blue-500 p-4 rounded-full shadow-lg">
-                    <TouchableOpacity>
+                    
+                    <TouchableOpacity onPress={() => router.push("/(alarm)/add-alarm")}>
                         <Ionicons name="add" size={28} color={"#fff"}/>
                     </TouchableOpacity>
+
                 </View>
             </View>
 
