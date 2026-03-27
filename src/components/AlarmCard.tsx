@@ -7,11 +7,12 @@ interface AlarmCardProps {
     period: string;
     label: string;
     frequency: string;
+    enabled: boolean;
 }
 
-export default function AlarmCard({ time, period, label, frequency }: AlarmCardProps) {
+export default function AlarmCard({ time, period, label, frequency, enabled }: AlarmCardProps) {
     // alarm toggle
-    const [isEnabled, setIsEnabled] = useState(false);
+    const [isEnabled, setIsEnabled] = useState(enabled);
 
     const toggleSwitch = () => {
         setIsEnabled(isEnabled => !isEnabled)
@@ -20,6 +21,7 @@ export default function AlarmCard({ time, period, label, frequency }: AlarmCardP
     return (
         <View className="flex-row justify-between items-center">
             
+            {/* Alarm details */}
             <View className="flex flex-col">
 
                 <View className="flex-row items-baseline gap-1">
@@ -27,12 +29,14 @@ export default function AlarmCard({ time, period, label, frequency }: AlarmCardP
                     <Text className="text-sm">{period}</Text>
                 </View>
 
-                <View className="mt-[-2px]">
-                    <Text className="text-[12px] text-gray-600">{label}, {frequency}</Text>
+                <View className="flex-row gap-x-1.5 mt-[-2px]">
+                    <Text className="text-[12px] text-gray-600">{label},</Text>
+                    <Text className="text-[12px] text-gray-600">{frequency}</Text>
                 </View>
 
             </View>
 
+            {/* Alarm toggle switch */}
             <View>
                 <TouchableOpacity onPress={toggleSwitch}>
                     <Ionicons 
