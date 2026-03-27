@@ -8,7 +8,7 @@ export default function AlarmLayout() {
         <Stack 
           screenOptions={{
             header: () => (
-                <SafeAreaView className="pt-6 pb-4 px-3">
+                <SafeAreaView className="pt-6 pb-4 px-4">
                     <View className="flex-row justify-between items-center">
 
                         <Text className="text-2xl font-medium color-neutral-800">Alarm</Text>

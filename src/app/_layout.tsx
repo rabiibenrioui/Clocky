@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 
-import "../global.css";
+import "../../global.css";
 
 export default function RootLayout() {
   const iconSize = 28;
