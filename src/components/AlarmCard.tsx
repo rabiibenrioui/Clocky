@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface AlarmCardProps {
     time: string;
@@ -11,13 +12,6 @@ interface AlarmCardProps {
 }
 
 export default function AlarmCard({ time, period, label, frequency, enabled }: AlarmCardProps) {
-    // alarm toggle
-    const [isEnabled, setIsEnabled] = useState(enabled);
-
-    const toggleSwitch = () => {
-        setIsEnabled(isEnabled => !isEnabled)
-    }
-    
     return (
         <View className="flex-row justify-between items-center">
             
@@ -37,18 +31,7 @@ export default function AlarmCard({ time, period, label, frequency, enabled }: A
             </View>
 
             {/* Alarm toggle switch */}
-            <View>
-                <TouchableOpacity onPress={toggleSwitch}>
-                    <Ionicons 
-                      name={isEnabled ? "toggle" : "toggle"} 
-                      size={36} 
-                      color={isEnabled ? "#1E6FFE" : "#52525250"}
-                      style={{
-                        transform: [{ scaleX: isEnabled ? 1 : -1 }]
-                      }}
-                      />
-                </TouchableOpacity>
-            </View>
+            <ToggleSwitch enabled={enabled}/>
 
         </View>
     )

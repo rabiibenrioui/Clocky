@@ -5,24 +5,12 @@ import { useRouter } from "expo-router";
 
 import Clock from "@/components/Clock"
 import AlarmCard from "@/components/AlarmCard";
+import { alarms } from "@/lib/utils";
 
 export default function Alarm() {
     // expo router
     const router = useRouter();
     
-    // Dummy alarm data
-    const alarms = [
-        { id: '1', time: "12:45", period: "AM", label: "Alarm", frequency: "Every Day", isOn: true },
-        { id: '2', time: "11:30", period: "AM", label: "Alarm", frequency: "Every Day", isOn: true },
-        { id: '3', time: "06:00", period: "PM", label: "Alarm", frequency: "Once", isOn: false },
-        { id: '4', time: "07:00", period: "AM", label: "Alarm", frequency: "Mon, Tue, Wed", isOn: true },
-        { id: '5', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: true },
-        { id: '6', time: "07:00", period: "AM", label: "Alarm", frequency: "Every Day", isOn: false },
-        { id: '7', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: false },
-        { id: '8', time: "07:00", period: "AM", label: "Alarm", frequency: "Every Day", isOn: false },
-        { id: '9', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: true },
-    ];
-
     // Spacing value
     let spacingBottom = alarms.length * 50;
 
