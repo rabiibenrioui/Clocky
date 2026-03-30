@@ -1,5 +1,4 @@
 import MainHeader from "@/components/MainHeader";
-import SetAlarmHeader from "@/components/SetAlarmHeader";
 import { Stack } from "expo-router";
 
 export default function AlarmLayout() {
@@ -23,7 +22,6 @@ export default function AlarmLayout() {
               name="add-alarm" 
               options={{
                 title: "Add alarm",
-                header: () => <SetAlarmHeader title="Add alarm" />
               }}/>
 
         </Stack>

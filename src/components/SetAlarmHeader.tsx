@@ -5,9 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SetAlarmHeaderProps {
     title: string;
+    onSave?: () => void;
 }
 
-export default function SetAlarmHeader({ title }: SetAlarmHeaderProps) {
+export default function SetAlarmHeader({ title, onSave }: SetAlarmHeaderProps) {
     const router = useRouter();
     
     return (
@@ -25,7 +26,7 @@ export default function SetAlarmHeader({ title }: SetAlarmHeaderProps) {
                 </View>
 
                 <View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={onSave}>
                         <Ionicons name="checkmark" size={30} color="#555" />
                     </TouchableOpacity>
                 </View>

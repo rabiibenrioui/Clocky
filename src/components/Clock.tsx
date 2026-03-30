@@ -2,10 +2,17 @@ import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { formatTime, formatDate } from "@/lib/utils";
 
-export default function ClockComponent() {
+interface ClockProps {
+    time?: Date;
+    mode?: "live" | "static";
+}
+
+export default function ClockComponent({ time, mode = "live" }: ClockProps) {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
+        if (mode !== "live") return;
+
         const timer = setInterval(() => {
             setCurrentTime(new Date())
         }, 1000);
@@ -13,18 +20,19 @@ export default function ClockComponent() {
         return () => clearInterval(timer);
     }, [])
 
-    const time = formatTime(currentTime);
+    const displayTime = mode === "live" ? currentTime : time ?? new Date();
+    const formattedTime = formatTime(displayTime);
 
     return (
         <View className="justify-center items-center">
             <View className="flex-row items-baseline gap-1.5">
 
                 <Text className="text-[72px] font-light text-gray-900 tracking-tighter">
-                    {time.hours}:{time.minutes}:{time.seconds}
+                    {formattedTime.hours}:{formattedTime.minutes}:{formattedTime.seconds}
                 </Text>
 
                 <Text className="text-[22px] font-medium text-gray-700">
-                    {time.period}
+                    {formattedTime.period}
                 </Text>
 
             </View>

@@ -32,19 +32,6 @@ export const formatDate = (date: Date): string => {
 
 /* Data */
 
-// Dummy Alarm data
-export const alarms = [
-    { id: '1', time: "12:45", period: "AM", label: "Alarm", frequency: "Every Day", isOn: true },
-    { id: '2', time: "11:30", period: "AM", label: "Alarm", frequency: "Every Day", isOn: true },
-    { id: '3', time: "06:00", period: "PM", label: "Alarm", frequency: "Once", isOn: false },
-    { id: '4', time: "07:00", period: "AM", label: "Alarm", frequency: "Mon, Tue, Wed", isOn: true },
-    //{ id: '5', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: true },
-    //{ id: '6', time: "07:00", period: "AM", label: "Alarm", frequency: "Every Day", isOn: false },
-    //{ id: '7', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: false },
-    //{ id: '8', time: "07:00", period: "AM", label: "Alarm", frequency: "Every Day", isOn: false },
-    //{ id: '9', time: "09:00", period: "PM", label: "Alarm", frequency: "Weekdays", isOn: true },
-];
-
 /// Repeat days data ///
 export const repeatOptions = [
     { id: "1", day: "Once" },
@@ -70,6 +57,52 @@ export const repeatModalOptions = repeatOptions.map(opt => ({
 export const getSelectedRepeatValue = (selectedId: string) => {
     const selected = repeatOptions.find(opt => opt.id === selectedId);
     return selected ? selected.day : 'Never';
+};
+
+// Get repeat days
+export const getRepeatDays = (selectedId: string): string[] => {
+    switch (selectedId) {
+        case "1":
+            return[];
+
+        case "2":
+            return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        
+        case "3":
+            return ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+        case "4":
+            return ["Sat", "Sun"];
+
+        case "5":
+            return ["Mon"];
+        case "6":
+            return ["Tue"];
+        case "7":
+            return ["Wed"];
+        case "8":
+            return ["Thu"];
+        case "9":
+            return ["Fri"];
+        case "10":
+            return ["Sat"];
+        case "11":
+            return ["Sun"];
+        
+        default:
+            return [];
+    }
+}
+
+// Format the label better (instead of showing the full week --> just show "Every Day")
+export const formatRepeatLabel = (days: string[]): string => {
+    if (days.length === 0) return "Once";
+
+    if (days.length === 7) return "Every day";
+    if (JSON.stringify(days) === JSON.stringify(["Mon","Tue","Wed","Thu","Fri"])) return "Weekdays";
+    if (JSON.stringify(days) === JSON.stringify(["Sat","Sun"])) return "Weekends";
+
+    return days.join(", ");
 };
 
 /// Snooze Data ///

@@ -1,15 +1,37 @@
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import Clock from "@/components/Clock"
 import AlarmCard from "@/components/AlarmCard";
-import { alarms } from "@/lib/utils";
+import { useCallback, useState } from "react";
+import { getAlarms, type Alarm } from "@/lib/alarmStorage";
+import { formatRepeatLabel } from "@/lib/utils";
 
 export default function Alarm() {
     // expo router
     const router = useRouter();
+
+    // alarms state
+    const [alarms, setAlarms] = useState<Alarm[]>([]);
+
+    // Load alarms whenever the screen comes into focus
+    useFocusEffect(
+        useCallback(() => {
+            loadAlarms();
+        }, [])
+    )
+
+    const loadAlarms = async () => {
+        try {
+            const savedAlarms = await getAlarms();
+            setAlarms(savedAlarms);
+        }
+        catch (error) {
+            console.error("Error loading alarms: ", error);
+        }
+    }
     
     // Spacing value
     let spacingBottom = alarms.length * 50;
@@ -23,16 +45,24 @@ export default function Alarm() {
               contentContainerStyle={{ paddingBottom: spacingBottom }}
               ListHeaderComponent={() => (
                 <View className="mt-14 mb-8">
-                    <Clock />
+                    <Clock mode="live" />
                 </View>
               )}
               renderItem={({ item }) => (
                 <AlarmCard 
-                  time={item.time}
-                  period={item.period}
+                  time={item.time.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }).split(' ')[0]}
+                  period={item.time.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }).split(' ')[1]}
                   label={item.label}
-                  frequency={item.frequency}
-                  enabled={item.isOn}
+                  frequency={formatRepeatLabel(item.repeat)}
+                  enabled={item.isEnabled}
                 />
               )}
               ItemSeparatorComponent={() => <View className="h-4" />}
