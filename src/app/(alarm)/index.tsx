@@ -1,13 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { FlatList, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Animated, FlatList, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AlarmCard from "@/components/AlarmCard";
 import Clock from "@/components/Clock";
 import { deleteAlarm, getAlarms, type Alarm } from "@/lib/alarmStorage";
 import { formatRepeatLabel } from "@/lib/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Alarm() {
     // expo router
@@ -15,6 +15,9 @@ export default function Alarm() {
 
     // alarms state
     const [alarms, setAlarms] = useState<Alarm[]>([]);
+
+    // Refs to measure actual screen positions
+    const alarmRefs = useRef<Record<string, View | null>>({});
 
     // Load alarms whenever the screen comes into focus
     useFocusEffect(
@@ -37,8 +40,6 @@ export default function Alarm() {
     let spacingBottom = alarms.length * 50;
 
     // Popup on long press
-    const [alarmLayouts, setAlarmLayouts] = useState<Record<string, { y: number; height: number }>>({});
-
     const [popup, setPopup] = useState<{
         visible: boolean;
         alarmId?: string;
@@ -62,9 +63,10 @@ export default function Alarm() {
                 )}
                 renderItem={({ item }) => (
                     <View
-                        onLayout={(event) => {
-                            const { y, height } = event.nativeEvent.layout;
-                            setAlarmLayouts(prev => ({ ...prev, [item.id]: { y, height } }))
+                        ref={(ref) => {
+                            if(ref) {
+                                alarmRefs.current[item.id] = ref;
+                            }
                         }}
                     >
                         <AlarmCard
@@ -82,14 +84,18 @@ export default function Alarm() {
                             frequency={formatRepeatLabel(item.repeat)}
                             enabled={item.isEnabled}
                             onLongPress={(pos) => {
-                                const layout = alarmLayouts[item.id];
-
-                                setPopup({
-                                    visible: true,
-                                    alarmId: item.id,
-                                    anchorY: pos?.topY ?? layout?.y ?? 0,
-                                    height: layout?.height ?? 0
-                                })
+                                const ref = alarmRefs.current[item.id];
+                                if (ref) {
+                                    ref.measure((x, y, width, height, pageX, pageY) => {
+                                        setPopup({
+                                            visible: true,
+                                            alarmId: item.id,
+                                            anchorY: pageY,
+                                            height: height
+                                        })
+                                    });
+                                }
+                                
                             }}
                         />
                     </View>
@@ -114,13 +120,18 @@ export default function Alarm() {
             {popup.visible && (
                 <>
                     {/* Backdrop */}
-                    <Pressable className="absolute inset-0" onPress={() => setPopup(p => ({ ...p, visible: false }))} />
+                    <Pressable 
+                      className="absolute inset-0" 
+                      onPress={() => setPopup(p => ({ ...p, visible: false }))} />
+                    
+                    {/* Popup component */}
                     <AlarmPopup
                         anchorY={popup.anchorY}
                         height={popup.height}
                         alarmId={popup.alarmId}
                         onClose={() => setPopup(p => ({ ...p, visible: false }))}
-                        refresh={loadAlarms} />
+                        refresh={loadAlarms} 
+                    />
                 </>
             )}
 
@@ -130,6 +141,27 @@ export default function Alarm() {
 
 // Popup Screen
 function AlarmPopup({ anchorY, height, alarmId, onClose, refresh }: any) {
+    // Animation at popping
+    const scaleAnim = useRef(new Animated.Value(0.8)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Animate in
+        Animated.parallel([
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                useNativeDriver: true,
+                tension: 100,
+                friction: 8,
+            }),
+            Animated.timing(opacityAnim, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
+    
     // Handle delete function
     const handleDelete = async () => {
         if (!alarmId) return;
@@ -140,14 +172,34 @@ function AlarmPopup({ anchorY, height, alarmId, onClose, refresh }: any) {
     }
 
     return (
-        <View
-            style={{ position: "absolute", bottom: (anchorY ?? 0) + (height ?? 0) - 1, left: 114, right: 114, zIndex: 999, elevation: 10 }}
-            className="bg-white rounded-xl shadow-lg py-3 px-2"
+        <Animated.View
+            style={{ 
+                position: "absolute", 
+                top: (anchorY ?? 0) - 140, 
+                left: 0, right: 0, 
+                zIndex: 999, 
+                elevation: 10,
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+                alignItems: 'center'
+            }}
         >
-            <TouchableOpacity onPress={handleDelete} className="flex-row items-center gap-x-1">
-                <Ionicons name="close-outline" size={20} color={"red"} />
-                <Text className="text-lg">Delete Alarm</Text>
-            </TouchableOpacity>
-        </View>
+
+            <Animated.View
+              style={{
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+              }}
+              className="bg-white rounded-xl shadow-lg py-3 px-2 max-w-40"
+              >
+
+                <TouchableOpacity onPress={handleDelete} className="flex-row items-center gap-x-1">
+                    <Ionicons name="close-outline" size={20} color={"red"} />
+                    <Text className="text-lg">Delete Alarm</Text>
+                </TouchableOpacity>
+
+            </Animated.View>
+
+        </Animated.View>
     )
 }
