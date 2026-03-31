@@ -33,76 +33,33 @@ export const formatDate = (date: Date): string => {
 /* Data */
 
 /// Repeat days data ///
-export const repeatOptions = [
-    { id: "1", day: "Once" },
-    { id: "2", day: "Every day" },
-    { id: "3", day: "Weekdays" },
-    { id: "4", day: "Weekends" },
-    { id: "5", day: "Monday" },
-    { id: "6", day: "Tuesday" },
-    { id: "7", day: "Wednesday" },
-    { id: "8", day: "Thursday" },
-    { id: "9", day: "Friday" },
-    { id: "10", day: "Saturday" },
-    { id: "11", day: "Sunday" },
+export const repeatModalOptions = [
+    { id: "Mon", label: "Monday" },
+    { id: "Tue", label: "Tuesday" },
+    { id: "Wed", label: "Wednesday" },
+    { id: "Thu", label: "Thursday" },
+    { id: "Fri", label: "Friday" },
+    { id: "Sat", label: "Saturday" },
+    { id: "Sun", label: "Sunday" },
 ];
-
-// Convert for modal
-export const repeatModalOptions = repeatOptions.map(opt => ({
-    id: opt.id,
-    label: opt.day
-}));
-
-// Get selected repeat value
-export const getSelectedRepeatValue = (selectedId: string) => {
-    const selected = repeatOptions.find(opt => opt.id === selectedId);
-    return selected ? selected.day : 'Never';
-};
-
-// Get repeat days
-export const getRepeatDays = (selectedId: string): string[] => {
-    switch (selectedId) {
-        case "1":
-            return[];
-
-        case "2":
-            return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        
-        case "3":
-            return ["Mon", "Tue", "Wed", "Thu", "Fri"];
-
-        case "4":
-            return ["Sat", "Sun"];
-
-        case "5":
-            return ["Mon"];
-        case "6":
-            return ["Tue"];
-        case "7":
-            return ["Wed"];
-        case "8":
-            return ["Thu"];
-        case "9":
-            return ["Fri"];
-        case "10":
-            return ["Sat"];
-        case "11":
-            return ["Sun"];
-        
-        default:
-            return [];
-    }
-}
 
 // Format the label better (instead of showing the full week --> just show "Every Day")
 export const formatRepeatLabel = (days: string[]): string => {
-    if (days.length === 0) return "Once";
+    if (!days || days.length === 0) return "Once";
 
     if (days.length === 7) return "Every day";
-    if (JSON.stringify(days) === JSON.stringify(["Mon","Tue","Wed","Thu","Fri"])) return "Weekdays";
-    if (JSON.stringify(days) === JSON.stringify(["Sat","Sun"])) return "Weekends";
+    
+    const hasWeekdays = ["Mon", "Tue", "Wed", "Thu", "Fri"].every(d => days.includes(d));
+    const hasWeekends = ["Sat", "Sun"].every(d => days.includes(d));
 
-    return days.join(", ");
+    if (days.length === 5 && hasWeekdays) return "Weekdays";
+    if (days.length === 2 && hasWeekends) return "Weekends";
+
+    // Sort days according to chronological order from Monday
+    const order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const sortedDays = [...days].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+
+    return sortedDays.join(", ");
 };
 
 /// Snooze Data ///
@@ -125,4 +82,24 @@ export const snoozeModalOptions = snoozeOptions.map(opt => ({
 export const getSelectedSnoozeValue = (selectedId:string) => {
     const selected = snoozeOptions.find(opt => opt.id === selectedId);
     return selected ? `${selected.duration} minutes` : '';
+};
+
+/// Ringtone Data ///
+export const ringtoneOptions = [
+    { id: '1', name: 'Default' },
+    { id: '2', name: 'Radar' },
+    { id: '3', name: 'Beacon' },
+    { id: '4', name: 'Chimes' },
+    { id: '5', name: 'Circuit' },
+    { id: '6', name: 'Reflection' }
+];
+
+export const ringtoneModalOptions = ringtoneOptions.map(opt => ({
+    id: opt.id,
+    label: opt.name
+}));
+
+export const getSelectedRingtoneValue = (selectedId: string) => {
+    const selected = ringtoneOptions.find(opt => opt.id === selectedId);
+    return selected ? selected.name : 'Default';
 };

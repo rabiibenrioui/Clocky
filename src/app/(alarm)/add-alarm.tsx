@@ -6,8 +6,10 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 
 import Clock from "@/components/Clock";
 import OptionCard from "@/components/OptionCard";
-import { getSelectedSnoozeValue, getSelectedRepeatValue, snoozeModalOptions, repeatModalOptions, getRepeatDays } from "@/lib/utils";
+import { getSelectedSnoozeValue, formatRepeatLabel, snoozeModalOptions, repeatModalOptions, getSelectedRingtoneValue, ringtoneModalOptions } from "@/lib/utils";
 import OptionModal from "@/components/OptionModal";
+import MultiSelectModal from "@/components/MultiSelectModal";
+import TextInputModal from "@/components/TextInputModal";
 
 import "../../../global.css"
 import { saveAlarm } from "@/lib/alarmStorage";
@@ -26,7 +28,9 @@ export default function AddAlarm() {
 
   // Selected values
   const [selectedSnoozeId, setSelectedSnoozeId] = useState<string>("2");
-  const [selectedRepeatId, setSelectedRepeatId] = useState<string>("1");
+  const [selectedRepeatDays, setSelectedRepeatDays] = useState<string[]>([]);
+  const [alarmLabel, setAlarmLabel] = useState<string>("Alarm");
+  const [selectedRingtoneId, setSelectedRingtoneId] = useState<string>("1");
 
   // Set the header with the handleSave function
   const navigation = useNavigation();
@@ -50,8 +54,8 @@ export default function AddAlarm() {
       const newAlarm = {
         id: Date.now().toString(),
         time: time,
-        label: "Alarm",
-        repeat: getRepeatDays(selectedRepeatId),
+        label: alarmLabel,
+        repeat: selectedRepeatDays,
         isEnabled: true,
       };
 
@@ -91,10 +95,10 @@ export default function AddAlarm() {
 
           <View className="flex-col gap-y-10 px-6">
 
-              <OptionCard title="Repeat" value={getSelectedRepeatValue(selectedRepeatId)} onPress={() => setRepeatModalShown(true)}/>
-              <OptionCard title="Label" value="Alarm" onPress={() => setLabelModalShown(true)}/>
+              <OptionCard title="Repeat" value={formatRepeatLabel(selectedRepeatDays)} onPress={() => setRepeatModalShown(true)}/>
+              <OptionCard title="Label" value={alarmLabel} onPress={() => setLabelModalShown(true)}/>
               <View className="h-px bg-gray-200" />
-              <OptionCard title="Ringtone" value="Default" onPress={() => setRingtoneModalShown(true)}/>
+              <OptionCard title="Ringtone" value={getSelectedRingtoneValue(selectedRingtoneId)} onPress={() => setRingtoneModalShown(true)}/>
               <OptionCard title="Snooze" value={getSelectedSnoozeValue(selectedSnoozeId)} onPress={() => setSnoozeModalShown(true)}/>
 
           </View>
@@ -102,23 +106,22 @@ export default function AddAlarm() {
           {/*===== Modals =====*/}
 
           {/* Repeat Modal */}
-          <OptionModal
+          <MultiSelectModal
             title="Repeat"
             visible={repeatModalShown}
             onClose={() => setRepeatModalShown(false)}
             options={repeatModalOptions}
-            selectedId={selectedRepeatId}
-            onSelect={setSelectedRepeatId}
+            selectedIds={selectedRepeatDays}
+            onSelect={setSelectedRepeatDays}
           />
 
           {/* Label Modal */}
-          <OptionModal
+          <TextInputModal
             title="Label"
             visible={labelModalShown}
             onClose={() => setLabelModalShown(false)}
-            options={snoozeModalOptions}
-            selectedId={selectedSnoozeId}
-            onSelect={setSelectedSnoozeId}
+            value={alarmLabel}
+            onSave={setAlarmLabel}
           />
 
           {/* Ringtone Modal */}
@@ -126,9 +129,9 @@ export default function AddAlarm() {
             title="Ringtone"
             visible={ringtoneModalShown}
             onClose={() => setRingtoneModalShown(false)}
-            options={snoozeModalOptions}
-            selectedId={selectedSnoozeId}
-            onSelect={setSelectedSnoozeId}
+            options={ringtoneModalOptions}
+            selectedId={selectedRingtoneId}
+            onSelect={setSelectedRingtoneId}
           />
 
           {/* Snooze Modal */}
