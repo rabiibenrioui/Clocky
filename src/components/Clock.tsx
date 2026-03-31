@@ -23,12 +23,17 @@ export default function ClockComponent({ time, mode = "live" }: ClockProps) {
     const displayTime = mode === "live" ? currentTime : time ?? new Date();
     const formattedTime = formatTime(displayTime);
 
+    // Don't show seconds in the 'add-alarm' screen
+    const clock = mode === "live" 
+                    ? `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
+                    : `${formattedTime.hours}:${formattedTime.minutes}`
+
     return (
         <View className="justify-center items-center">
             <View className="flex-row items-baseline gap-1.5">
 
                 <Text className="text-[72px] font-light text-gray-900 tracking-tighter">
-                    {formattedTime.hours}:{formattedTime.minutes}:{formattedTime.seconds}
+                    {clock}
                 </Text>
 
                 <Text className="text-[22px] font-medium text-gray-700">
