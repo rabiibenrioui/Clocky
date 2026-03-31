@@ -29,35 +29,55 @@ export default function TextInputModal({ visible, onClose, value, onSave, title 
           transparent={true}
           animationType="slide"
           onRequestClose={onClose}
+          statusBarTranslucent={true}
         >
             <Pressable className="flex-1" onPress={onClose}>
                 
                 <View className="flex-1 justify-center items-center bg-black/40">
 
                     <Pressable 
-                    className="flex-col bg-white rounded-2xl shadow-lg relative"
-                    style={{ width: "85%", paddingVertical: 24, paddingHorizontal: 20}}
+                    className="flex-col bg-white rounded-2xl shadow-lg relative overflow-hidden"
+                    style={{ width: "85%" }}
                     onPress={(e) => e.stopPropagation()}
                     >
-                        <Text className="text-2xl font-semibold mb-6">{title}</Text>
+                        <View className="pt-6 px-4">
+                            <Text className="text-lg font-semibold mb-8">{title}</Text>
 
-                        {/* Input Field */}
-                        <TextInput
-                            className="bg-gray-100 px-4 py-3 rounded-xl text-lg text-gray-800"
-                            placeholder="e.g. Alarm"
-                            value={localValue}
-                            onChangeText={setLocalValue}
-                            autoFocus={false}
-                        />
+                            {/* Input Field */}
+                            <TextInput
+                                className="rounded-xl text-lg text-gray-800"
+                                style={{ padding: 0, paddingHorizontal: 2, paddingBottom: 6 }}
+                                placeholder="e.g. Alarm"
+                                value={localValue}
+                                onChangeText={setLocalValue}
+                                autoFocus={true}
+                            />
+                        
+
+                            {/* Divider */}
+                            <View className="h-px bg-gray-200" />
+
+                        </View>
 
                         {/* Actions */}
-                        <View className="flex-row justify-end mt-8 gap-x-6">
-                            <TouchableOpacity onPress={onClose}>
+                        <View className="flex-row">
+
+                            <TouchableOpacity 
+                                onPress={onClose}
+                                className="flex-1 items-center justify-center p-6 active:bg-gray-100"
+                                activeOpacity={1}
+                            >
                                 <Text className="text-gray-500 font-semibold text-lg">CANCEL</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={handleSave}>
+
+                            <TouchableOpacity 
+                                onPress={handleSave}
+                                className="flex-1 items-center justify-center p-6 active:bg-gray-100"
+                                activeOpacity={1}
+                            >
                                 <Text className="text-[#1E6FFE] font-semibold text-lg">OK</Text>
                             </TouchableOpacity>
+
                         </View>
 
                     </Pressable>

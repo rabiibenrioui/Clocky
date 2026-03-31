@@ -45,6 +45,7 @@ export default function MultiSelectModal({ visible, onClose, options, selectedId
           transparent={true}
           animationType="slide"
           onRequestClose={onClose}
+          statusBarTranslucent={true}
         >
             <Pressable className="flex-1" onPress={onClose}>
                 
@@ -56,7 +57,7 @@ export default function MultiSelectModal({ visible, onClose, options, selectedId
                     onPress={(e) => e.stopPropagation()}
                     >
                         <View className="py-6 px-2">
-                            <Text className="text-lg font-light tracking-tight mb-9 pl-2">{title}</Text>
+                            <Text className="text-lg font-light tracking-tight mb-6 pl-2">{title}</Text>
 
                             <ScrollView showsVerticalScrollIndicator={false}>
                                 <View className="gap-y-2">

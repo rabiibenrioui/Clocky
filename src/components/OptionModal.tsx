@@ -25,8 +25,9 @@ export default function OptionModal({ visible, onClose, options, selectedId, onS
         <Modal
           visible={visible}
           transparent={true}
-          animationType="fade"
+          animationType="slide"
           onRequestClose={onClose}
+          statusBarTranslucent={true}
         >
             {/* Backdrop */}
             <Pressable className="flex-1" onPress={onClose} >
@@ -35,37 +36,45 @@ export default function OptionModal({ visible, onClose, options, selectedId, onS
 
                     {/* Menu container */}
                     <Pressable 
-                    className="flex-col bg-white rounded-2xl shadow-lg relative"
-                    style={{ width: "85%", maxHeight: "70%", paddingVertical: 24, paddingHorizontal: 20}}
+                    className="flex-col bg-white rounded-2xl shadow-lg relative overflow-hidden"
+                    style={{ width: "85%", maxHeight: "70%"}}
                     onPress={(e) => e.stopPropagation()}
                     >
-                        {/* Title */}
-                        <Text className="text-2xl font-semibold mb-6">{title}</Text>
+                        <View className="py-6 px-4">
+                            {/* Title */}
+                            <Text className="text-lg font-light mb-6">{title}</Text>
 
-                        {/* Options */}
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            <View style={{ rowGap: 24 }}>
-                                {options.map((option) => (
-                                    <TouchableOpacity 
-                                        key={option.id} 
-                                        className="flex-row items-center justify-between" 
-                                        onPress={() => handleSelect(option.id)}>
+                            {/* Options */}
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                <View style={{ rowGap: 24 }}>
+                                    {options.map((option) => (
+                                        <TouchableOpacity 
+                                            key={option.id} 
+                                            className="flex-row items-center justify-between" 
+                                            onPress={() => handleSelect(option.id)}>
 
-                                        <Text className="text-xl">{option.label}</Text>
+                                            <Text className="text-xl text-gray-800">{option.label}</Text>
 
-                                        <Ionicons 
-                                            name={selectedId === option.id ? "radio-button-on" : "radio-button-off"} 
-                                            size={20} 
-                                            color={selectedId === option.id ? "#1E6FFE" : "#52525250"}/>
+                                            <Ionicons 
+                                                name={selectedId === option.id ? "radio-button-on" : "radio-button-off"} 
+                                                size={22} 
+                                                color={selectedId === option.id ? "#1E6FFE" : "#52525250"}/>
 
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </ScrollView>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        </View>
 
-                        {/* Actions */}
-                        <View className="flex-row justify-end mt-8 gap-x-6">
-                            <TouchableOpacity onPress={onClose}>
+                        {/* Border */}
+                        <View className="h-px bg-gray-200" />
+
+                        {/* Action */}
+                        <View className="flex-row">
+                            <TouchableOpacity
+                              className="flex-1 justify-center items-center p-6 active:bg-gray-100" 
+                              activeOpacity={1}
+                              onPress={onClose}>
                                 <Text className="text-gray-500 font-semibold text-lg">CANCEL</Text>
                             </TouchableOpacity>
                         </View>
@@ -77,4 +86,4 @@ export default function OptionModal({ visible, onClose, options, selectedId, onS
             </Pressable>
         </Modal>
     )
-}
+}
