@@ -26,7 +26,10 @@ export default function ClockComponent({ time, mode = "live" }: ClockProps) {
     // Don't show seconds in the 'add-alarm' screen
     const clock = mode === "live" 
                     ? `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
-                    : `${formattedTime.hours}:${formattedTime.minutes}`
+                    : `${formattedTime.hours}:${formattedTime.minutes}`;
+    
+    // Don't show date in the 'add-alarm' screen
+    const dateLabel = mode === "live" ? formatDate(currentTime) : null
 
     return (
         <View className="justify-center items-center">
@@ -43,7 +46,7 @@ export default function ClockComponent({ time, mode = "live" }: ClockProps) {
             </View>
 
             <Text className="text-lg font-medium text-gray-700">
-                {formatDate(currentTime)}
+                {dateLabel}
             </Text>
         </View>
     )
