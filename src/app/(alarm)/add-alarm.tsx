@@ -60,7 +60,7 @@ export default function AddAlarm() {
       };
 
       await saveAlarm(newAlarm); // Save the new alarm in the storage
-      router.back(); // Go back to the alarms screen
+      router.replace({ pathname: '/(alarm)', params: { newAlarmId: newAlarm.id } }); // Go back to the alarms screen
 
     }
     catch (error) {

@@ -2,6 +2,8 @@ import { Tabs, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import "../../global.css";
+import { useEffect } from "react";
+import { requestPermissions } from "@/lib/alarmScheduler";
 
 export default function RootLayout() {
   // tab icons size
@@ -10,6 +12,11 @@ export default function RootLayout() {
   // hide tab bar variable
   const segments = useSegments() as string[];
   const hideTabBar = segments.includes("add-alarm");
+
+  // request permissions once at startup
+  useEffect(() => {
+    requestPermissions();
+  }, []);
 
   return (
     <Tabs 

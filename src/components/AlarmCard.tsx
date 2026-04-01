@@ -8,18 +8,19 @@ interface AlarmCardProps {
     label: string;
     frequency: string;
     enabled: boolean;
-
+    onToggle?: (enabled: boolean) => void;
     onLongPress?: (pos: { x: number; y: number; topY: number }) => void;
 }
 
-export default function AlarmCard({ time, period, label, frequency, enabled, onLongPress }: AlarmCardProps) {
+export default function AlarmCard({ time, period, label, frequency, enabled, onToggle, onLongPress }: AlarmCardProps) {
     return (
         <TouchableOpacity 
           className="flex-row justify-between items-center" 
           onLongPress={(e) => {
             const { pageX, pageY, locationY } = e.nativeEvent;
             onLongPress?.({ x: pageX, y: pageY, topY: pageY - locationY })
-          }} >
+          }} 
+          delayLongPress={250}>
             
             {/* Alarm details */}
             <View className="flex flex-col">
@@ -37,7 +38,7 @@ export default function AlarmCard({ time, period, label, frequency, enabled, onL
             </View>
 
             {/* Alarm toggle switch */}
-            <ToggleSwitch enabled={enabled}/>
+            <ToggleSwitch enabled={enabled} onToggle={onToggle}/>
 
         </TouchableOpacity>
     )

@@ -4,14 +4,17 @@ import { TouchableOpacity, View } from "react-native";
 
 interface ToggleSwitchProps {
     enabled: boolean;
+    onToggle?: (enabled: boolean) => void;
 }
 
-export default function ToggleSwitch({ enabled }: ToggleSwitchProps) {
-    // switch toggle
+export default function ToggleSwitch({ enabled, onToggle }: ToggleSwitchProps) {
+    // Switch toggle
     const [isEnabled, setIsEnabled] = useState(enabled);
 
     const toggleSwitch = () => {
-        setIsEnabled(isEnabled => !isEnabled)
+        const next = !isEnabled;
+        setIsEnabled(next);
+        onToggle?.(next);
     }
     
     return (

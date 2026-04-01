@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cancelAlarm, scheduleAlarm } from './alarmScheduler';
 
 export interface Alarm {
   id: string;
@@ -7,6 +8,7 @@ export interface Alarm {
   repeat: string[];
   isEnabled: boolean;
   soundUri?: string;
+  notifId?: string;
 }
 
 const ALARMS_KEY = '@alarms'
@@ -14,7 +16,12 @@ const ALARMS_KEY = '@alarms'
 export const saveAlarm = async (alarm: Alarm): Promise<void> => {
     try {
         const existingAlarms = await getAlarms();
-        const updatedAlarms = [...existingAlarms, alarm];
+
+        // Schedule alarm notification and store its ID
+        const notifId = await scheduleAlarm(alarm);
+        const alarmWithNotif = { ...alarm, notifId }
+
+        const updatedAlarms = [...existingAlarms, alarmWithNotif];
         await AsyncStorage.setItem(ALARMS_KEY, JSON.stringify(updatedAlarms));
     }
     catch (error) {
@@ -46,6 +53,20 @@ export const getAlarms = async (): Promise<Alarm[]> => {
 export const updateAlarm = async (id: string, updates: Partial<Alarm>): Promise<void> => {
     try {
         const alarms = await getAlarms();
+        const existing = alarms.find(a => a.id === id);
+
+        if (!existing) return;
+
+        // Reschedule or cancel depending on the toggle action
+        if (updates.isEnabled === true) {
+            const notifId = await scheduleAlarm({ ...existing, ...updates });
+            updates.notifId = notifId;
+        } 
+        else if (updates.isEnabled === false) {
+            if (existing.notifId) await cancelAlarm(existing.notifId);
+            updates.notifId = undefined;
+        }
+
         const updatedAlarms = alarms.map(alarm =>
             alarm.id === id ? { ...alarm, ...updates } : alarm
         );
@@ -60,6 +81,12 @@ export const updateAlarm = async (id: string, updates: Partial<Alarm>): Promise<
 export const deleteAlarm = async (id: string): Promise<void> => {
     try {
         const alarms = await getAlarms();
+        const alarm = alarms.find(a => a.id === id);
+
+        // Cancel the scheduled notification first
+        if (alarm?.notifId) await cancelAlarm(alarm.notifId)
+        
+        // Delete the alarm (filter it out)
         const filteredAlarms = alarms.filter(alarm => alarm.id !== id);
         await AsyncStorage.setItem(ALARMS_KEY, JSON.stringify(filteredAlarms));
     }

@@ -1,35 +1,43 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Animated, FlatList, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AlarmCard from "@/components/AlarmCard";
 import Clock from "@/components/Clock";
-import { deleteAlarm, getAlarms, type Alarm } from "@/lib/alarmStorage";
+import { deleteAlarm, getAlarms, updateAlarm, type Alarm } from "@/lib/alarmStorage";
 import { formatRepeatLabel } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Alarm() {
-    // expo router
+    // Expo router
     const router = useRouter();
 
-    // alarms state
+    // Alarms state
     const [alarms, setAlarms] = useState<Alarm[]>([]);
 
     // Refs to measure actual screen positions
     const alarmRefs = useRef<Record<string, View | null>>({});
 
+    // Read new alarm id from 'add-alarm' screen
+    const { newAlarmId } = useLocalSearchParams<{ newAlarmId?: string }>();
+
     // Load alarms whenever the screen comes into focus
     useFocusEffect(
         useCallback(() => {
-            loadAlarms();
-        }, [])
+            loadAlarms(newAlarmId ?? undefined);
+        }, [newAlarmId])
     )
 
-    const loadAlarms = async () => {
+    const loadAlarms = async (triggerBannerForId?: string) => {
         try {
             const savedAlarms = await getAlarms();
             setAlarms(savedAlarms);
+
+            // Alarm banner
+            if (triggerBannerForId) {
+                showNextAlarmBanner(savedAlarms, triggerBannerForId);
+            }
         }
         catch (error) {
             console.error("Error loading alarms: ", error);
@@ -37,7 +45,7 @@ export default function Alarm() {
     }
 
     // Spacing value
-    let spacingBottom = alarms.length * 50;
+    const spacingBottom = alarms.length * 50;
 
     // Popup on long press
     const [popup, setPopup] = useState<{
@@ -49,6 +57,57 @@ export default function Alarm() {
         visible: false,
     })
 
+    //=== Alarm Banner ===\\
+
+    // State
+    const [nextAlarmBanner, setNextAlarmBanner] = useState<string | null>(null);
+
+    // Animation
+    const bannerAnim = useRef(new Animated.Value(0)).current;
+    const bannerSlide = useRef(new Animated.Value(10)).current;
+
+    // Timeout cleanup
+    const bannerTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Function
+    const showNextAlarmBanner = (alarms: Alarm[], changedAlarmId: string) => {
+        const alarm = alarms.find(a => a.id === changedAlarmId);
+
+        if (!alarm || !alarm.isEnabled) {
+            setNextAlarmBanner(null);
+            return;
+        }
+
+        const now = new Date();
+        const fire = new Date(alarm.time);
+        fire.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+        if (fire <= now) fire.setDate(fire.getDate() + 1);
+
+        const ms = fire.getTime() - now.getTime();
+        const hours = Math.floor(ms / (1000 * 60 * 60));
+        const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+        const text = hours === 0 ? `${minutes} minutes` : `${hours}${' '}hours${' and '}${minutes}${' '}minutes`;
+
+        setNextAlarmBanner(text);
+
+        // Animate in
+        Animated.parallel([
+            Animated.timing(bannerAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
+            Animated.timing(bannerSlide, { toValue: 0, duration: 250, useNativeDriver: true }),
+        ]).start();
+
+        // Animate out then hide
+        if (bannerTimeout.current) clearTimeout(bannerTimeout.current);
+
+        bannerTimeout.current = setTimeout(() => {
+            Animated.parallel([
+                Animated.timing(bannerAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+                Animated.timing(bannerSlide, { toValue: 10, duration: 200, useNativeDriver: true }),
+            ]).start(() => setNextAlarmBanner(null))
+
+        }, 4000);
+    };
+
     return (
         <SafeAreaView className="flex-1">
             <FlatList
@@ -57,57 +116,75 @@ export default function Alarm() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: spacingBottom }}
                 ListHeaderComponent={() => (
-                    <View className="mt-14 mb-8">
-                        <Clock mode="live" />
-                    </View>
-                )}
-                renderItem={({ item }) => (
-                    <View
-                        ref={(ref) => {
-                            if(ref) {
-                                alarmRefs.current[item.id] = ref;
-                            }
-                        }}
-                    >
-                        <AlarmCard
-                            time={item.time.toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            }).split(' ')[0]}
-                            period={item.time.toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            }).split(' ')[1]}
-                            label={item.label}
-                            frequency={formatRepeatLabel(item.repeat)}
-                            enabled={item.isEnabled}
-                            onLongPress={(pos) => {
-                                const ref = alarmRefs.current[item.id];
-                                if (ref) {
-                                    ref.measure((x, y, width, height, pageX, pageY) => {
-                                        setPopup({
-                                            visible: true,
-                                            alarmId: item.id,
-                                            anchorY: pageY,
-                                            height: height
-                                        })
-                                    });
+                        <View className="mt-14 mb-8">
+                            <Clock mode="live" />
+                        </View>
+                    )
+                }
+                renderItem={({ item }) => {
+                    const timeParts = item.time.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                        }).split(' ');
+                    
+                    return (
+                        <View
+                            ref={(ref) => {
+                                if(ref) {
+                                    alarmRefs.current[item.id] = ref;
                                 }
-                                
                             }}
-                        />
-                    </View>
-                )}
+                        >
+                            <AlarmCard
+                                time={timeParts[0]}
+                                period={timeParts[1]}
+                                label={item.label}
+                                frequency={formatRepeatLabel(item.repeat)}
+                                enabled={item.isEnabled}
+                                onToggle={async (enabled) => {
+                                    await updateAlarm(item.id, { isEnabled: enabled });
+                                    await loadAlarms(item.id);
+                                }}
+                                onLongPress={(pos) => {
+                                    const ref = alarmRefs.current[item.id];
+                                    if (ref) {
+                                        ref.measure((x, y, width, height, pageX, pageY) => {
+                                            setPopup({
+                                                visible: true,
+                                                alarmId: item.id,
+                                                anchorY: pageY,
+                                                height: height
+                                            })
+                                        });
+                                    }
+                                    
+                                }}
+                            />
+                        </View>
+                    )
+                }}
                 ItemSeparatorComponent={() => <View className="h-4" />}
                 className="px-4"
                 decelerationRate="fast"
                 snapToAlignment="start"
             />
 
+            {/* Next alarm banner */}
+            {nextAlarmBanner && (
+                <Animated.View 
+                  className="absolute bottom-24 left-0 right-0 items-center z-50"
+                  style={{ opacity: bannerAnim, transform: [{ translateY: bannerSlide }] }}>
+
+                    <View className="bg-gray-500 px-4 py-2 rounded-xl">
+                        <Text className="text-white" style={{ maxWidth: 270 }}>Alarm set for {nextAlarmBanner} from now</Text>
+                    </View>
+
+                </Animated.View>
+            )}
+
             {/* Add alarm */}
-            <View className="absolute bottom-28 left-0 right-0 items-center z-50 bg-transparent">
+            <View className="absolute bottom-24 left-0 right-0 items-center bg-transparent">
                 <View className="bg-blue-500 p-4 rounded-full shadow-lg">
 
                     <TouchableOpacity onPress={() => router.push("/(alarm)/add-alarm")}>
