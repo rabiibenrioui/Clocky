@@ -7,7 +7,7 @@ import { requestPermissions } from "@/lib/alarmScheduler";
 
 export default function RootLayout() {
   // tab icons size
-  const iconSize = 28;
+  const iconSize = 30;
 
   // hide tab bar variable
   const segments = useSegments() as string[];
@@ -31,11 +31,10 @@ export default function RootLayout() {
           borderRadius: 30, 
           overflow: "hidden", 
           paddingHorizontal: 5, 
-          marginHorizontal: 65, 
-          marginBottom: 18, 
-          height: 59,
+          marginHorizontal: 70, 
+          marginBottom: 15,
+          height: 55,
           position: "absolute",
-          flexDirection: "column",
         },
         tabBarIconStyle: { 
           marginTop: 'auto', 
@@ -44,7 +43,7 @@ export default function RootLayout() {
           width: iconSize, 
         }, 
         tabBarLabelStyle: { 
-          fontSize: 11.5,
+          fontSize: 11,
         }
       }}
       >

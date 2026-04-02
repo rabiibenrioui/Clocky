@@ -173,7 +173,7 @@ export default function Alarm() {
             {/* Next alarm banner */}
             {nextAlarmBanner && (
                 <Animated.View 
-                  className="absolute bottom-24 left-0 right-0 items-center z-50"
+                  className="absolute bottom-[90px] left-0 right-0 items-center z-50"
                   style={{ opacity: bannerAnim, transform: [{ translateY: bannerSlide }] }}>
 
                     <View className="bg-gray-500 px-4 py-2 rounded-xl">
@@ -184,7 +184,7 @@ export default function Alarm() {
             )}
 
             {/* Add alarm */}
-            <View className="absolute bottom-24 left-0 right-0 items-center bg-transparent">
+            <View className="absolute bottom-[90px] left-0 right-0 items-center bg-transparent">
                 <View className="bg-blue-500 p-4 rounded-full shadow-lg">
 
                     <TouchableOpacity onPress={() => router.push("/(alarm)/add-alarm")}>
