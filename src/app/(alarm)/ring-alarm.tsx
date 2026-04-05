@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
 import { getAlarms } from "@/lib/alarmStorage";
 import { scheduleAlarm } from "@/lib/alarmScheduler";
 import { playAlarm, stopAlarm } from "@/lib/useAlarmSound";
@@ -101,44 +101,63 @@ export default function RingingScreen() {
     const spin = ringAnim.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
 
     return (
-        <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <Animated.View className="flex-1 bg-[#0f0c29] items-center justify-center px-8" style={{ opacity: fadeAnim }}>
 
             {/* Background glow blobs */}
-            <View style={styles.blobTop} />
-            <View style={styles.blobBottom} />
+            <View className="absolute -top-[80px] -left-[80px] w-[320px] h-[320px] rounded-[160px] bg-[#7c6fcd]/25" />
+            <View className="absolute -bottom-[100px] -right-[80px] w-[350px] h-[350px] rounded-[175px] bg-[rgba(88,161,255,0.18)]" />
 
             {/* Time */}
-            <View style={styles.timeRow}>
-                <Text style={styles.timeText}>{display}</Text>
-                <Text style={styles.periodText}>{period}</Text>
+            <View className="flex-row items-end mb-1.5">
+                <Text className="text-[80px] font-extralight text-white tracking-[-2px]">{display}</Text>
+                <Text className="text-[22px] font-normal text-white/55 mb-4 ml-1.5">{period}</Text>
             </View>
 
             {/* Label */}
-            <Text style={styles.labelText}>{alarmLabel}</Text>
+            <Text className="text-lg font-medium text-white/70 tracking-[1.5px] uppercase mb-14">{alarmLabel}</Text>
 
             {/* Pulsing alarm icon */}
-            <View style={styles.iconWrapper}>
+            <View className="w-[180px] h-[180px] items-center justify-center mb-16">
                 {/* Spinning dashed ring */}
-                <Animated.View style={[styles.spinRing, { transform: [{ rotate: spin }] }]} />
+                <Animated.View className="absolute w-[170px] h-[170px] rounded-[85px] border-2 border-[#7c6fcd]/60 border-dashed" style={{ transform: [{ rotate: spin }] }} />
 
                 {/* Pulsing inner circle */}
-                <Animated.View style={[styles.iconCircle, { transform: [{ scale: pulseAnim }] }]}>
+                <Animated.View 
+                    className="w-[130px] h-[130px] rounded-[65px] bg-[#7c6fcd] items-center justify-center" 
+                    style={{ 
+                        transform: [{ scale: pulseAnim }],
+                        shadowColor: "#7c6fcd",
+                        shadowOffset: { width: 0, height: 0 },
+                        shadowRadius: 40,
+                        shadowOpacity: 0.9,
+                        elevation: 20, 
+                    }}>
                     <Ionicons name="alarm" size={64} color="#fff" />
                 </Animated.View>
             </View>
 
             {/* Buttons */}
-            <View style={styles.buttonsRow}>
+            <View className="w-full gap-[14px]">
 
                 {/* Snooze */}
-                <TouchableOpacity style={styles.snoozeBtn} onPress={handleSnooze} activeOpacity={0.8}>
+                <TouchableOpacity className="flex-row items-center justify-center gap-2 py-4 rounded-[18px] border-[1.5px] border-[#7c6fcd]/50 bg-[#7c6fcd]/12" onPress={handleSnooze} activeOpacity={0.8}>
                     <Ionicons name="time-outline" size={20} color="#7c6fcd" />
-                    <Text style={styles.snoozeBtnText}>Snooze</Text>
+                    <Text className="text-[#a89fe0] text-base font-semibold">Snooze</Text>
                 </TouchableOpacity>
 
                 {/* Dismiss */}
-                <TouchableOpacity style={styles.dismissBtn} onPress={handleDismiss} activeOpacity={0.8}>
-                    <Text style={styles.dismissBtnText}>Dismiss</Text>
+                <TouchableOpacity 
+                    className="items-center justify-center py-[18px] rounded-[18px] bg-[#7c6fcd]" 
+                    onPress={handleDismiss} 
+                    activeOpacity={0.8}
+                    style={{
+                        shadowColor: "#7c6fcd",
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 16,
+                        elevation: 10
+                    }}>
+                    <Text className="text-white text-[17px] font-bold tracking-[0.5px]">Dismiss</Text>
                 </TouchableOpacity>
 
             </View>
@@ -146,134 +165,3 @@ export default function RingingScreen() {
         </Animated.View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#0f0c29",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: 32,
-    },
-
-    // --- Background blobs ---
-    blobTop: {
-        position: "absolute",
-        top: -80,
-        left: -80,
-        width: 320,
-        height: 320,
-        borderRadius: 160,
-        backgroundColor: "rgba(124, 111, 205, 0.25)",
-    },
-    blobBottom: {
-        position: "absolute",
-        bottom: -100,
-        right: -80,
-        width: 350,
-        height: 350,
-        borderRadius: 175,
-        backgroundColor: "rgba(88, 161, 255, 0.18)",
-    },
-
-    // --- Time ---
-    timeRow: {
-        flexDirection: "row",
-        alignItems: "flex-end",
-        marginBottom: 6,
-    },
-    timeText: {
-        fontSize: 80,
-        fontWeight: "200",
-        color: "#ffffff",
-        letterSpacing: -2,
-    },
-    periodText: {
-        fontSize: 22,
-        fontWeight: "400",
-        color: "rgba(255,255,255,0.55)",
-        marginBottom: 16,
-        marginLeft: 6,
-    },
-
-    // --- Label ---
-    labelText: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: "rgba(255,255,255,0.7)",
-        letterSpacing: 1.5,
-        textTransform: "uppercase",
-        marginBottom: 56,
-    },
-
-    // --- Icon ---
-    iconWrapper: {
-        width: 180,
-        height: 180,
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 64,
-    },
-    spinRing: {
-        position: "absolute",
-        width: 170,
-        height: 170,
-        borderRadius: 85,
-        borderWidth: 2,
-        borderColor: "rgba(124, 111, 205, 0.6)",
-        borderStyle: "dashed",
-    },
-    iconCircle: {
-        width: 130,
-        height: 130,
-        borderRadius: 65,
-        backgroundColor: "#7c6fcd",
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: "#7c6fcd",
-        shadowOffset: { width: 0, height: 0 },
-        shadowRadius: 40,
-        shadowOpacity: 0.9,
-        elevation: 20,
-    },
-
-    // --- Buttons ---
-    buttonsRow: {
-        width: "100%",
-        gap: 14,
-    },
-    snoozeBtn: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        paddingVertical: 16,
-        borderRadius: 18,
-        borderWidth: 1.5,
-        borderColor: "rgba(124,111,205,0.5)",
-        backgroundColor: "rgba(124,111,205,0.12)",
-    },
-    snoozeBtnText: {
-        color: "#a89fe0",
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    dismissBtn: {
-        alignItems: "center",
-        justifyContent: "center",
-        paddingVertical: 18,
-        borderRadius: 18,
-        backgroundColor: "#7c6fcd",
-        shadowColor: "#7c6fcd",
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.5,
-        shadowRadius: 16,
-        elevation: 10,
-    },
-    dismissBtnText: {
-        color: "#fff",
-        fontSize: 17,
-        fontWeight: "700",
-        letterSpacing: 0.5,
-    },
-});
