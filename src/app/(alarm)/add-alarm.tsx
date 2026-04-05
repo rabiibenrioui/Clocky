@@ -6,7 +6,7 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 
 import Clock from "@/components/Clock";
 import OptionCard from "@/components/OptionCard";
-import { getSelectedSnoozeValue, formatRepeatLabel, snoozeModalOptions, repeatModalOptions, getSelectedRingtoneValue, ringtoneModalOptions } from "@/lib/utils";
+import { snoozeOptions, getSelectedSnoozeValue, formatRepeatLabel, snoozeModalOptions, repeatModalOptions, getSelectedRingtoneValue, ringtoneModalOptions } from "@/lib/utils";
 import OptionModal from "@/components/OptionModal";
 import MultiSelectModal from "@/components/MultiSelectModal";
 import TextInputModal from "@/components/TextInputModal";
@@ -51,12 +51,16 @@ export default function AddAlarm() {
 
   const handleSave = async () => {
     try {
+      const snoozeDuration = snoozeOptions.find(opt => opt.id === selectedSnoozeId)?.duration || 5;
+
       const newAlarm = {
         id: Date.now().toString(),
         time: time,
         label: alarmLabel,
         repeat: selectedRepeatDays,
         isEnabled: true,
+        snooze: snoozeDuration,
+        ringtoneId: selectedRingtoneId,
       };
 
       await saveAlarm(newAlarm); // Save the new alarm in the storage

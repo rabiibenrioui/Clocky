@@ -39,17 +39,22 @@ export default function RingingScreen() {
             Animated.timing(ringAnim, { toValue: 1, duration: 3000, easing: Easing.linear, useNativeDriver: true })
         ).start();
 
-        // Load alarm label
+        // Load alarm label & play sound
         (async () => {
+            let selectedRingtoneId = '1';
+            
             if (alarmId) {
                 const alarms = await getAlarms();
                 const found = alarms.find(a => a.id === alarmId);
-                if (found) setAlarmLabel(found.label || "Alarm");
+                if (found) {
+                    setAlarmLabel(found.label || "Alarm");
+                    if (found.ringtoneId) selectedRingtoneId = found.ringtoneId;
+                }
             }
+            
+            // Start playing sound
+            playAlarm(selectedRingtoneId);
         })();
-
-        // Start playing sound
-        playAlarm();
 
         // Live clock tick
         const tick = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -69,12 +74,13 @@ export default function RingingScreen() {
     const handleSnooze = async () => {
         await stopAlarm();
 
-        // Schedule a new alarm 5 minutes from now
-        const snoozeTime = new Date(Date.now() + 5 * 60 * 1000);
         if (alarmId) {
             const alarms = await getAlarms();
             const original = alarms.find(a => a.id === alarmId);
             if (original) {
+                const snoozeDuration = original.snooze || 5;
+                const snoozeTime = new Date(Date.now() + snoozeDuration * 60 * 1000);
+                
                 await scheduleAlarm({
                     ...original,
                     time: snoozeTime,
@@ -127,7 +133,7 @@ export default function RingingScreen() {
                 {/* Snooze */}
                 <TouchableOpacity style={styles.snoozeBtn} onPress={handleSnooze} activeOpacity={0.8}>
                     <Ionicons name="time-outline" size={20} color="#7c6fcd" />
-                    <Text style={styles.snoozeBtnText}>Snooze 5 min</Text>
+                    <Text style={styles.snoozeBtnText}>Snooze</Text>
                 </TouchableOpacity>
 
                 {/* Dismiss */}

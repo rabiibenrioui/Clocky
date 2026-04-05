@@ -9,6 +9,8 @@ export interface Alarm {
   isEnabled: boolean;
   soundUri?: string;
   notifId?: string;
+  snooze?: number;
+  ringtoneId?: string;
 }
 
 const ALARMS_KEY = '@alarms'

@@ -25,7 +25,11 @@ export default function Alarm() {
     // Load alarms whenever the screen comes into focus
     useFocusEffect(
         useCallback(() => {
-            loadAlarms(newAlarmId ?? undefined);
+            loadAlarms(newAlarmId || undefined);
+
+            if (newAlarmId) {
+                router.setParams({ newAlarmId: '' });
+            }
         }, [newAlarmId])
     )
 

@@ -86,12 +86,12 @@ export const getSelectedSnoozeValue = (selectedId:string) => {
 
 /// Ringtone Data ///
 export const ringtoneOptions = [
-    { id: '1', name: 'Default' },
-    { id: '2', name: 'Radar' },
-    { id: '3', name: 'Beacon' },
-    { id: '4', name: 'Chimes' },
-    { id: '5', name: 'Circuit' },
-    { id: '6', name: 'Reflection' }
+    { id: '1', name: 'Morning' },
+    { id: '2', name: 'Home' },
+    { id: '3', name: 'Retro' },
+    { id: '4', name: 'Guitar' },
+    { id: '5', name: 'Oxygen' },
+    { id: '6', name: 'Neon' }
 ];
 
 export const ringtoneModalOptions = ringtoneOptions.map(opt => ({

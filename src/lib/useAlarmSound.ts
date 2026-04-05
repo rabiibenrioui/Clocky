@@ -2,11 +2,20 @@ import { Audio } from 'expo-av';
 
 let _sound: Audio.Sound | null = null;
 
+const RINGTONES: Record<string, any> = {
+    '1': require('../../assets/sounds/morning.mp3'),
+    '2': require('../../assets/sounds/home.mp3'),
+    '3': require('../../assets/sounds/retro.mp3'),
+    '4': require('../../assets/sounds/guitar.mp3'),
+    '5': require('../../assets/sounds/oxygen.mp3'),
+    '6': require('../../assets/sounds/neon.mp3')
+};
+
 /**
  * Plays the alarm sound on a loop.
  * Safe to call multiple times — stops any previous instance first.
  */
-export async function playAlarm() {
+export async function playAlarm(ringtoneId: string = '1') {
     await stopAlarm(); // stop any previous sound first
 
     try {
@@ -16,8 +25,10 @@ export async function playAlarm() {
             staysActiveInBackground: true,
         });
 
+        const soundFile = RINGTONES[ringtoneId] || RINGTONES['1'];
+
         const { sound } = await Audio.Sound.createAsync(
-            require('../../assets/sounds/alarm.mp3'),
+            soundFile,
             { shouldPlay: true, isLooping: true, volume: 1.0 }
         );
 
