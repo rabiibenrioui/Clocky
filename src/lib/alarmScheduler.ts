@@ -5,7 +5,6 @@ import { Alarm } from './alarmStorage';
 // How notifications appear when the app is in the foreground
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: false,
         shouldShowBanner: true,
@@ -52,6 +51,10 @@ export async function scheduleAlarm(alarm: Alarm): Promise<string> {
             title: 'Clocky Alarm',
             body: alarm.label || alarmTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
             sound: 'alarm.mp3',       // iOS + dev builds; Expo Go falls back to system default
+            data: {
+                alarmId: alarm.id,
+                screen: 'ring-alarm'
+            }
         },
         trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DATE,

@@ -23,6 +23,13 @@ export default function AlarmLayout() {
               options={{
                 title: "Add alarm",
               }}/>
+            
+            <Stack.Screen 
+              name="ring-alarm" 
+              options={{
+                title: "Alarm Ringing",
+                headerShown: false,
+              }}/>
 
         </Stack>
     )

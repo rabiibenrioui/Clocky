@@ -1,22 +1,71 @@
-import { Tabs, useSegments } from "expo-router";
+import * as Notifications from 'expo-notifications';
+import { Tabs, useSegments, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 import "../../global.css";
-import { useEffect } from "react";
 import { requestPermissions } from "@/lib/alarmScheduler";
 
 export default function RootLayout() {
-  // tab icons size
+  // Expo router
+  const router = useRouter();
+
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
+  // Tab icons size
   const iconSize = 30;
 
-  // hide tab bar variable
+  // Hide tab bar variable
   const segments = useSegments() as string[];
-  const hideTabBar = segments.includes("add-alarm");
+  const hideTabBar = segments.includes("add-alarm") || segments.includes("ring-alarm");
 
-  // request permissions once at startup
+  // Request permissions once at startup
   useEffect(() => {
     requestPermissions();
+
+    // Listener for when notification is received while app is open
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
+      const data = notification.request.content.data;
+
+      if (data?.screen === 'ring-alarm' && data?.alarmId) {
+        router.push({
+          pathname: '/(alarm)/ring-alarm',
+          params: { alarmId: String(data.alarmId) },
+        })
+      }
+    })
+    
+    // Listen for when user taps the notification
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+
+      if (data?.screen === 'ring-alarm' && data?.alarmId) {
+        router.push({
+          pathname: '/(alarm)/ring-alarm',
+          params: { alarmId: String(data.alarmId) },
+        })
+      }
+    });
+
+    return () => {
+      foregroundSubscription.remove();
+      subscription.remove();
+    };
   }, []);
+
+  // Handle app launch from notification
+  useEffect(() => {
+    if (lastNotificationResponse) {
+      const data = lastNotificationResponse.notification.request.content.data;
+      
+      if (data?.screen === 'alarm-ringing' && data?.alarmId) {
+        router.push({
+            pathname: '/(alarm)/ring-alarm',
+            params: { alarmId: String(data.alarmId) },
+        });
+      }
+    }
+  }, [lastNotificationResponse]);
 
   return (
     <Tabs 
