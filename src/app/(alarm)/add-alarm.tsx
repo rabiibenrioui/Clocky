@@ -8,6 +8,7 @@ import Clock from "@/components/Clock";
 import OptionCard from "@/components/OptionCard";
 import { snoozeOptions, getSelectedSnoozeValue, formatRepeatLabel, snoozeModalOptions, repeatModalOptions, getSelectedRingtoneValue, ringtoneModalOptions } from "@/lib/utils";
 import OptionModal from "@/components/OptionModal";
+import RingtoneModal from "@/components/RingtoneModal";
 import MultiSelectModal from "@/components/MultiSelectModal";
 import TextInputModal from "@/components/TextInputModal";
 
@@ -129,7 +130,7 @@ export default function AddAlarm() {
           />
 
           {/* Ringtone Modal */}
-          <OptionModal
+          <RingtoneModal
             title="Ringtone"
             visible={ringtoneModalShown}
             onClose={() => setRingtoneModalShown(false)}
