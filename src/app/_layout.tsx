@@ -17,7 +17,7 @@ export default function RootLayout() {
 
   // Hide tab bar variable
   const segments = useSegments() as string[];
-  const hideTabBar = segments.includes("add-alarm") || segments.includes("ring-alarm");
+  const hideTabBar = segments.includes("add-alarm") || segments.includes("ring-alarm") || segments.includes("add-timezone");
 
   // Request permissions once at startup
   useEffect(() => {
