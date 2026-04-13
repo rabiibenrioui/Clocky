@@ -32,7 +32,7 @@ export const formatDate = (date: Date): string => {
 
 /* Data */
 
-/// Repeat days data ///
+/** Repeat days data **/
 export const repeatModalOptions = [
     { id: "Mon", label: "Monday" },
     { id: "Tue", label: "Tuesday" },
@@ -62,7 +62,7 @@ export const formatRepeatLabel = (days: string[]): string => {
     return sortedDays.join(", ");
 };
 
-/// Snooze Data ///
+/** Snooze Data **/
 export const snoozeOptions = [
     { id: '1', duration: 5},
     { id: '2', duration: 10},
@@ -84,7 +84,7 @@ export const getSelectedSnoozeValue = (selectedId:string) => {
     return selected ? `${selected.duration} minutes` : '';
 };
 
-/// Ringtone Data ///
+/** Ringtone Data **/
 export const ringtoneOptions = [
     { id: '1', name: 'Morning' },
     { id: '2', name: 'Home' },

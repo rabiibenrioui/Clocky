@@ -3,12 +3,13 @@ import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface SetAlarmHeaderProps {
+interface CustomHeaderProps {
     title: string;
+    shouldSave: boolean;
     onSave?: () => void;
 }
 
-export default function SetAlarmHeader({ title, onSave }: SetAlarmHeaderProps) {
+export default function CustomHeader({ title, onSave, shouldSave }: CustomHeaderProps) {
     const router = useRouter();
     
     return (
@@ -25,11 +26,13 @@ export default function SetAlarmHeader({ title, onSave }: SetAlarmHeaderProps) {
                     
                 </View>
 
-                <View>
-                    <TouchableOpacity onPress={onSave}>
-                        <Ionicons name="checkmark" size={30} color="#555" />
-                    </TouchableOpacity>
-                </View>
+                {shouldSave &&
+                    <View>
+                        <TouchableOpacity onPress={onSave}>
+                            <Ionicons name="checkmark" size={30} color="#555" />
+                        </TouchableOpacity>
+                    </View>
+                }
                 
             </View>
         </SafeAreaView>

@@ -4,10 +4,12 @@ import { formatTime, formatDate } from "@/lib/utils";
 
 interface ClockProps {
     time?: Date;
-    mode?: "live" | "static";
+    mode?: "live" | "static" | "display";
+    clockSize?: number;
+    periodSize?: number;
 }
 
-export default function ClockComponent({ time, mode = "live" }: ClockProps) {
+export default function ClockComponent({ time, mode = "live", clockSize = 72, periodSize = 22 }: ClockProps) {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export default function ClockComponent({ time, mode = "live" }: ClockProps) {
     const formattedTime = formatTime(displayTime);
 
     // Don't show seconds in the 'add-alarm' screen
-    const clock = mode === "live" 
+    const clock = mode === "live"
                     ? `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
                     : `${formattedTime.hours}:${formattedTime.minutes}`;
     
@@ -33,21 +35,23 @@ export default function ClockComponent({ time, mode = "live" }: ClockProps) {
 
     return (
         <View className="justify-center items-center">
-            <View className="flex-row items-baseline gap-1.5">
+            <View className="flex-row items-baseline gap-x-1.5">
 
-                <Text className="text-[72px] font-light text-gray-900 tracking-tighter">
+                <Text style={{ fontSize: clockSize }} className="font-light text-gray-900 tracking-tighter">
                     {clock}
                 </Text>
 
-                <Text className="text-[22px] font-medium text-gray-700">
+                <Text style={{ fontSize: periodSize }} className="font-medium text-gray-700">
                     {formattedTime.period}
                 </Text>
 
             </View>
 
-            <Text className="text-lg font-medium text-gray-700">
-                {dateLabel}
-            </Text>
+            {dateLabel && (
+                <Text className="text-lg font-medium text-gray-700">
+                    {dateLabel}
+                </Text>
+            )}
         </View>
     )
 }

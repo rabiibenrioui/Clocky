@@ -187,7 +187,7 @@ export default function Alarm() {
                 </Animated.View>
             )}
 
-            {/* Add alarm */}
+            {/* Add alarm button */}
             <View className="absolute bottom-[90px] left-0 right-0 items-center bg-transparent">
                 <View className="bg-blue-500 p-4 rounded-full shadow-lg">
 

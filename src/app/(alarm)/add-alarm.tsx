@@ -1,26 +1,25 @@
-import { useState, useLayoutEffect } from "react";
-import { View, Platform, TouchableOpacity } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation, useRouter } from "expo-router";
+import { useLayoutEffect, useState } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DateTimePicker from "@react-native-community/datetimepicker"
 
 import Clock from "@/components/Clock";
+import MultiSelectModal from "@/components/MultiSelectModal";
 import OptionCard from "@/components/OptionCard";
-import { snoozeOptions, getSelectedSnoozeValue, formatRepeatLabel, snoozeModalOptions, repeatModalOptions, getSelectedRingtoneValue, ringtoneModalOptions } from "@/lib/utils";
 import OptionModal from "@/components/OptionModal";
 import RingtoneModal from "@/components/RingtoneModal";
-import MultiSelectModal from "@/components/MultiSelectModal";
 import TextInputModal from "@/components/TextInputModal";
-
-import "../../../global.css"
+import { formatRepeatLabel, getSelectedRingtoneValue, getSelectedSnoozeValue, repeatModalOptions, ringtoneModalOptions, snoozeModalOptions, snoozeOptions } from "@/lib/utils";
+import CustomHeader from "@/components/CustomHeader";
 import { saveAlarm } from "@/lib/alarmStorage";
-import SetAlarmHeader from "@/components/SetAlarmHeader";
+import "../../../global.css";
 
 export default function AddAlarm() {
   // Time state
   const [time, setTime] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  
+
   // Modal states
   const [snoozeModalShown, setSnoozeModalShown] = useState(false);
   const [repeatModalShown, setRepeatModalShown] = useState(false);
@@ -39,9 +38,10 @@ export default function AddAlarm() {
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
-        <SetAlarmHeader 
+        <CustomHeader
           title="Add Alarm"
-          onSave={handleSave}
+          shouldSave = {true}
+          onSave= {handleSave}
         />
       )
     })
@@ -73,82 +73,82 @@ export default function AddAlarm() {
       throw error;
     }
   }
-    
+
   return (
-      <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1">
 
-          {/* Alarm time selector */}
-          <View className="mb-10">
-              <TouchableOpacity onPress={() => setShowPicker(true)}>
-                <Clock mode="static" time={time} />
-              </TouchableOpacity>
+      {/* Alarm time selector */}
+      <View className="mb-10">
+        <TouchableOpacity onPress={() => setShowPicker(true)}>
+          <Clock mode="static" time={time} />
+        </TouchableOpacity>
 
-              {showPicker && (
-                <DateTimePicker 
-                  value={time}
-                  mode="time"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  onChange={(event, selectedTime) => {
-                    setShowPicker(Platform.OS === "ios");
-                    if (selectedTime) setTime(selectedTime);
-                  }}
-                />
-              )}
-          </View>
-
-          {/*===== Options =====*/}
-
-          <View className="flex-col gap-y-10 px-6">
-
-              <OptionCard title="Repeat" value={formatRepeatLabel(selectedRepeatDays)} onPress={() => setRepeatModalShown(true)}/>
-              <OptionCard title="Label" value={alarmLabel} onPress={() => setLabelModalShown(true)}/>
-              <View className="h-px bg-gray-200" />
-              <OptionCard title="Ringtone" value={getSelectedRingtoneValue(selectedRingtoneId)} onPress={() => setRingtoneModalShown(true)}/>
-              <OptionCard title="Snooze" value={getSelectedSnoozeValue(selectedSnoozeId)} onPress={() => setSnoozeModalShown(true)}/>
-
-          </View>
-
-          {/*===== Modals =====*/}
-
-          {/* Repeat Modal */}
-          <MultiSelectModal
-            title="Repeat"
-            visible={repeatModalShown}
-            onClose={() => setRepeatModalShown(false)}
-            options={repeatModalOptions}
-            selectedIds={selectedRepeatDays}
-            onSelect={setSelectedRepeatDays}
+        {showPicker && (
+          <DateTimePicker
+            value={time}
+            mode="time"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={(event, selectedTime) => {
+              setShowPicker(Platform.OS === "ios");
+              if (selectedTime) setTime(selectedTime);
+            }}
           />
+        )}
+      </View>
 
-          {/* Label Modal */}
-          <TextInputModal
-            title="Label"
-            visible={labelModalShown}
-            onClose={() => setLabelModalShown(false)}
-            value={alarmLabel}
-            onSave={setAlarmLabel}
-          />
+      {/*===== Options =====*/}
 
-          {/* Ringtone Modal */}
-          <RingtoneModal
-            title="Ringtone"
-            visible={ringtoneModalShown}
-            onClose={() => setRingtoneModalShown(false)}
-            options={ringtoneModalOptions}
-            selectedId={selectedRingtoneId}
-            onSelect={setSelectedRingtoneId}
-          />
+      <View className="flex-col gap-y-10 px-6">
 
-          {/* Snooze Modal */}
-          <OptionModal
-            title="Snooze"
-            visible={snoozeModalShown}
-            onClose={() => setSnoozeModalShown(false)}
-            options={snoozeModalOptions}
-            selectedId={selectedSnoozeId}
-            onSelect={setSelectedSnoozeId}
-          />
+        <OptionCard title="Repeat" value={formatRepeatLabel(selectedRepeatDays)} onPress={() => setRepeatModalShown(true)} />
+        <OptionCard title="Label" value={alarmLabel} onPress={() => setLabelModalShown(true)} />
+        <View className="h-px bg-gray-200" />
+        <OptionCard title="Ringtone" value={getSelectedRingtoneValue(selectedRingtoneId)} onPress={() => setRingtoneModalShown(true)} />
+        <OptionCard title="Snooze" value={getSelectedSnoozeValue(selectedSnoozeId)} onPress={() => setSnoozeModalShown(true)} />
 
-      </SafeAreaView>
+      </View>
+
+      {/*===== Modals =====*/}
+
+      {/* Repeat Modal */}
+      <MultiSelectModal
+        title="Repeat"
+        visible={repeatModalShown}
+        onClose={() => setRepeatModalShown(false)}
+        options={repeatModalOptions}
+        selectedIds={selectedRepeatDays}
+        onSelect={setSelectedRepeatDays}
+      />
+
+      {/* Label Modal */}
+      <TextInputModal
+        title="Label"
+        visible={labelModalShown}
+        onClose={() => setLabelModalShown(false)}
+        value={alarmLabel}
+        onSave={setAlarmLabel}
+      />
+
+      {/* Ringtone Modal */}
+      <RingtoneModal
+        title="Ringtone"
+        visible={ringtoneModalShown}
+        onClose={() => setRingtoneModalShown(false)}
+        options={ringtoneModalOptions}
+        selectedId={selectedRingtoneId}
+        onSelect={setSelectedRingtoneId}
+      />
+
+      {/* Snooze Modal */}
+      <OptionModal
+        title="Snooze"
+        visible={snoozeModalShown}
+        onClose={() => setSnoozeModalShown(false)}
+        options={snoozeModalOptions}
+        selectedId={selectedSnoozeId}
+        onSelect={setSelectedSnoozeId}
+      />
+
+    </SafeAreaView>
   )
 }
