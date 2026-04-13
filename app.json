@@ -4,7 +4,7 @@
     "slug": "Clocky",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app/Clocky11.png",
+    "icon": "./assets/icon.png",
     "scheme": "clocky",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,9 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/app/Clocky11.png",
-        "backgroundImage": "./assets/app/Clocky11.png",
-        "monochromeImage": "./assets/app/Clocky11.png"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-icon.png",
+        "monochromeImage": "./assets/adaptive-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -31,7 +31,7 @@
     "web": {
       "output": "static",
       "bundler": "metro",
-      "favicon": "./assets/app/Clocky11.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-router",
